@@ -1,1 +1,1 @@
-# AzureBlackMagicWorkshop
+# Azure Black Magic Workshop
