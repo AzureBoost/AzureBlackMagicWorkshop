@@ -1,4 +1,28 @@
-﻿# Example 2: Create a virtual machine with key-vault
+﻿#============================================================================
+#	Datei:		11 - VM Mit Key Vault erstellen.ps1
+#
+#	Summary:	In diesem Script wird wieder eine virtuelle Maschine erstellt
+#               In diesem Fall wird der Azure Key Vault verwendet um die
+#               Informationen zum Kennwort außerhalb der virtuellen Maschine
+#               zu speichern. 
+#
+#	Datum:		2018-05-24
+#
+#	PowerShell Version: 5.1
+#   Azure Version: 5.1.1
+#------------------------------------------------------------------------------
+#	Geschrieben von 
+#       Tillmann Eitelberg, oh22information services GmbH 
+#       Frank Geisler, GDS Business Intelligence GmbH
+#       Patrick Heyde, Microsoft GmbH
+#
+#   Dieses Script ist nur zu Lehr- bzw. Lernzwecken gedacht
+#  
+#   DIESER CODE UND DIE ENTHALTENEN INFORMATIONEN WERDEN OHNE GEWÄHR JEGLICHER 
+#   ART ZUR VERFÜGUNG GESTELLT, WEDER AUSDRÜCKLICH NOCH IMPLIZIT, EINSCHLIESSLICH, 
+#   ABER NICHT BESCHRÄNKT AUF FUNKTIONALITÄT ODER EIGNUNG FÜR EINEN BESTIMMTEN 
+#   ZWECK. SIE VERWENDEN DEN CODE AUF EIGENE GEFAHR.
+#============================================================================*/
 
     # Variables   
 
@@ -38,9 +62,9 @@
 
     # Azure Key Vault
     New-AzureRmKeyVault `
-    -VaultName $keyVaultName `
-    -ResourceGroupName $ResourceGroupName `
-    -Location $Location
+        -VaultName $keyVaultName `
+        -ResourceGroupName $ResourceGroupName `
+        -Location $Location
 
     # Key Vault Policy setzen
     Set-AzureRmKeyVaultAccessPolicy `
