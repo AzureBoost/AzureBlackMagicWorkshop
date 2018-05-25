@@ -124,64 +124,82 @@ function New-AzureRmVmFromSku
 		[string]$ipAddressType = "static"
 	)
 
-	$secPassword = ConvertTo-SecureString $password -AsPlainText -Force 
+	$secPassword = ConvertTo-SecureString $password `
+						-AsPlainText `
+						-Force 
 
 	# Resource Group
-    $resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName `
-											-Location $Location `
-											-ErrorAction SilentlyContinue
+	$resourceGroup = Get-AzureRmResourceGroup `
+						-Name $ResourceGroupName `
+						-Location $Location `
+						-ErrorAction SilentlyContinue
     	
     if(!$resourceGroup){
-            $resourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName `                                                      -Location $Location;
+			$resourceGroup = New-AzureRmResourceGroup `
+								-Name $ResourceGroupName `
+                                -Location $Location;
     }
 
 	# Storage
 
 	if(!$managedDisks)
 	{
-		$StorageAccount = Get-AzureRmStorageAccount -ResourceGroupName $ResourceGroupName `
-							-Name $StorageName `                            -ErrorAction SilentlyContinue;
+		$StorageAccount = Get-AzureRmStorageAccount `
+							-ResourceGroupName $ResourceGroupName `
+							-Name $StorageName `
+                            -ErrorAction SilentlyContinue;
 
 		if( !$StorageAccount ){
-			 $StorageAccount = New-AzureRmStorageAccount -ResourceGroupName $ResourceGroupName `
-								                         -Name $StorageName `                                                         -Type $StorageType `                                                         -Location $Location;
+			 $StorageAccount = New-AzureRmStorageAccount `
+			 						-ResourceGroupName $ResourceGroupName `
+								    -Name $StorageName `
+                                    -Type $StorageType `
+                                    -Location $Location;
 		}
 	}
 
 	# Network
-	$PIp = Get-AzureRmPublicIpAddress -Name $pipName `
-			                          -ResourceGroupName $ResourceGroupName `                                       -ErrorAction SilentlyContinue;
+	$PIp = Get-AzureRmPublicIpAddress `
+				-Name $pipName `
+			    -ResourceGroupName $ResourceGroupName `
+                -ErrorAction SilentlyContinue;
     
     if ( !$PIp ){
-	    $PIp = New-AzureRmPublicIpAddress -Name $pipName `
+		$PIp = New-AzureRmPublicIpAddress `
+				-Name $pipName `
 			    -ResourceGroupName $ResourceGroupName `
 			    -Location $Location `
 			    -AllocationMethod Dynamic;
     }
 
     # Virtual Network definition
-    $VNet = Get-AzureRmVirtualNetwork -Name $VNetName `
-									  -ResourceGroupName $vNetResourceGroupName `
-									  -ErrorAction SilentlyContinue;
+	$VNet = Get-AzureRmVirtualNetwork `
+				-Name $VNetName `
+				-ResourceGroupName $vNetResourceGroupName `
+				-ErrorAction SilentlyContinue;
 
     if(!$VNet){
     
-    	$SubnetConfig = New-AzureRmVirtualNetworkSubnetConfig -Name $Subnet1Name `
-					-AddressPrefix $VNetSubnetAddressPrefix;
+		$SubnetConfig = New-AzureRmVirtualNetworkSubnetConfig `
+							-Name $Subnet1Name `
+							-AddressPrefix $VNetSubnetAddressPrefix;
 
 
-        $VNet = New-AzureRmVirtualNetwork -Name $VNetName `
-			                                -ResourceGroupName $VNetResourceGroupName `
-			                                -Location $Location `
-			                                -AddressPrefix $VNetAddressPrefix `
-			                                -Subnet $SubnetConfig;
+		$VNet = New-AzureRmVirtualNetwork `
+					-Name $VNetName `
+			        -ResourceGroupName $VNetResourceGroupName `
+			        -Location $Location `
+			        -AddressPrefix $VNetAddressPrefix `
+			        -Subnet $SubnetConfig;
     }
     else{
-        $SubnetConfig = Get-AzureRmVirtualNetworkSubnetConfig -VirtualNetwork $VNet `
-                                                        -Name $Subnet1Name;    
+		$SubnetConfig = Get-AzureRmVirtualNetworkSubnetConfig `
+							-VirtualNetwork $VNet `
+                            -Name $Subnet1Name;    
     }
 
-	$Interface = New-AzureRmNetworkInterface -Name $InterfaceName `
+	$Interface = New-AzureRmNetworkInterface `
+					-Name $InterfaceName `
 					-ResourceGroupName $ResourceGroupName `
 					-Location $Location `
 					-SubnetId $VNet.Subnets[0].Id `
@@ -191,31 +209,36 @@ function New-AzureRmVmFromSku
 	## Setup local VM object
 	$Credential = New-Object System.Management.Automation.PSCredential ($user, $secPassword)
 
-    $VirtualMachine = Get-AzureRmVM -Name $vmName `
-					-ResourceGroupName $resourceGroupName `
-					-ErrorAction SilentlyContinue;
+	$VirtualMachine = Get-AzureRmVM `
+						-Name $vmName `
+						-ResourceGroupName $resourceGroupName `
+						-ErrorAction SilentlyContinue;
 
     if( !$VirtualMachine ){
 
-		$VirtualMachine = New-AzureRmVMConfig -VMName $VMName `
+		$VirtualMachine = New-AzureRmVMConfig `
+								-VMName $VMName `
 								-VMSize $VMSize
 		
         Write-Host "Set-AzureRmVMOperatingSystem "
-	    $VirtualMachine = Set-AzureRmVMOperatingSystem -VM $VirtualMachine `
+		$VirtualMachine = Set-AzureRmVMOperatingSystem `
+							-VM $VirtualMachine `
 						    -Windows `
 						    -ComputerName $ComputerName `
 						    -Credential $Credential `
-						    -ProvisionVMAgent;
+						    -ProvisionVMAgent
 
         Write-Host "Set-AzureRmVMSourceImage "
-	    $VirtualMachine = Set-AzureRmVMSourceImage -VM $VirtualMachine `
+		$VirtualMachine = Set-AzureRmVMSourceImage `
+							-VM $VirtualMachine `
 						    -PublisherName $publisherName `
 						    -Offer $offer `
 						    -Skus $skus `
-						    -Version $version;
+						    -Version $version
                      
         Write-Host "Add-AzureRmVMNetworkInterface "
-	    $VirtualMachine = Add-AzureRmVMNetworkInterface -VM $VirtualMachine `
+		$VirtualMachine = Add-AzureRmVMNetworkInterface `
+							-VM $VirtualMachine `
 						    -Id $Interface.Id
 
 		if(!$managedDisks)
@@ -223,24 +246,28 @@ function New-AzureRmVmFromSku
 			$OSDiskUri = $StorageAccount.PrimaryEndpoints.Blob.ToString() + "vhds/" + $OSDiskName + ".vhd"
 		
 			Write-Host "Set-AzureRmVMOSDisk "
-			$VirtualMachine = Set-AzureRmVMOSDisk -VM $VirtualMachine `
+			$VirtualMachine = Set-AzureRmVMOSDisk `
+								-VM $VirtualMachine `
 								-Name $OSDiskName `
 								-VhdUri $OSDiskUri `
 								-CreateOption FromImage
 		}
 
 		Write-Host "New-AzureRmVM "
-	    New-AzureRmVM -ResourceGroupName $ResourceGroupName `
-					    -Location $Location `
-					    -VM $VirtualMachine;
+		New-AzureRmVM `
+			-ResourceGroupName $ResourceGroupName `
+			-Location $Location `
+			-VM $VirtualMachine;
 
 		#if($ipAddress) 
 		#{		
-		#	$nic = Get-AzureRmNetworkInterface -Name $interfaceName `
-		#						-ResourceGroupName $resourceGroupName
+		#	$nic = Get-AzureRmNetworkInterface `
+		#				-Name $interfaceName `
+		#				-ResourceGroupName $resourceGroupName
 		#	$nic.IpConfigurations[0].PrivateIpAllocationMethod = $ipAddressType
 		#	$nic.IpConfigurations[0].PrivateIpAddress = $ipAddress
-		#	Set-AzureRmNetworkInterface -NetworkInterface $nic
+		#	Set-AzureRmNetworkInterface `
+		#		-NetworkInterface $nic
 		#}
 
     }

@@ -49,15 +49,20 @@ function New-AzureRmManagedDisk
 	$guid = (([guid]::NewGuid()).ToString()).Replace("-","")
 
 	# Get the VM
-	$vm = Get-AzureRmVM -Name $vmName -ResourceGroupName $resourceGroup 
+	$vm = Get-AzureRmVM `
+			-Name $vmName `
+			-ResourceGroupName $resourceGroup 
 
 	# Get the maximum Lun
-	$lun = $vm.StorageProfile.DataDisks | Measure-Object -Property Lun -Maximum
+	$lun = $vm.StorageProfile.DataDisks | Measure-Object `
+											-Property Lun `
+											-Maximum
 	$nextLun = $lun.Maximum + 1
 	$dataDiskName = "$($vmName)_$($diskName)_$($guid)"
 
 	Write-Host "New-AzureRmDiskConfig "
-	$diskConfig = New-AzureRmDiskConfig -Location $location `
+	$diskConfig = New-AzureRmDiskConfig `
+						-Location $location `
 						-DiskSizeGB $diskSize `
 						-Sku $accountType `
 						-CreateOption $createOption `
@@ -65,14 +70,23 @@ function New-AzureRmManagedDisk
 						-Verbose
 
 	Write-Host "New-AzureRmDisk "
-	$dataDisk = New-AzureRmDisk -DiskName $dataDiskName `
-								 -Disk $diskConfig `
-								 -ResourceGroupName $resourceGroup `
-								 -Verbose
+	$dataDisk = New-AzureRmDisk `
+					-DiskName $dataDiskName `
+					-Disk $diskConfig `
+					-ResourceGroupName $resourceGroup `
+					-Verbose
 
 	Write-Host "Add-AzureRmVMDataDisk "
-	$vm = Add-AzureRmVMDataDisk -VM $vm -Name $dataDiskName -CreateOption Attach -ManagedDiskId $dataDisk.Id -Lun $nextLun
+	$vm = Add-AzureRmVMDataDisk `
+			-VM $vm `
+			-Name $dataDiskName `
+			-CreateOption Attach `
+			-ManagedDiskId $dataDisk.Id `
+			-Lun $nextLun
 
-	Write-Host "Update-AzureRmVM "
-	Update-AzureRmVM -VM $vm -ResourceGroupName $resourceGroup
+	Write-Host "Update-AzureRmVM"
+	
+	Update-AzureRmVM `
+		-VM $vm `
+		-ResourceGroupName $resourceGroup
 }
