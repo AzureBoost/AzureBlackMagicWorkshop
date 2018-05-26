@@ -6,6 +6,9 @@
 #               Informationen zum Kennwort außerhalb der virtuellen Maschine
 #               zu speichern. 
 #
+#               ACHTUNG! Unten muss noch die GUID der eigenen Subscription 
+#               und der Benutzer der berechtigt werden soll ergänzt werden. 
+#
 #	Datum:		2018-05-24
 #
 #	PowerShell Version: 5.1
@@ -24,144 +27,173 @@
 #   ZWECK. SIE VERWENDEN DEN CODE AUF EIGENE GEFAHR.
 #============================================================================*/
 
-    # Variables   
+#------------------------------------------------------------------------------
+# 0. Variablen definieren
+#------------------------------------------------------------------------------
+ 
+## Global
+$ResourceGroupName = "KeyVaultTestRS"
+$Location = "WestEurope"
 
-    ## Global
-    $ResourceGroupName = "KeyVaultTestRS"
-    $Location = "WestEurope"
-
-    ## Storage
-    $StorageName = "kvstor01"
-    $StorageType = "Standard_LRS"
+## Storage
+$StorageName = "kvstor01"
+$StorageType = "Standard_LRS"
    
-    ## Network
-    $InterfaceName = "ServerInterface06"
-    $VNetName = "VNet09"
-    $Subnet1Name = "Subnet1"
-    $VNetAddressPrefix = "10.0.0.0/16"
-    $VNetSubnetAddressPrefix = "10.0.0.0/24"
+## Network
+$InterfaceName = "ServerInterface06"
+$VNetName = "VNet09"
+$Subnet1Name = "Subnet1"
+$VNetAddressPrefix = "10.0.0.0/16"
+$VNetSubnetAddressPrefix = "10.0.0.0/24"
 
-    ## Compute
-    $VMName = "VirtualMachine12"
-    $ComputerName = "Server22"
-    $VMSize = "Standard_A2"
-    $OSDiskName = $VMName + "OSDisk"
-    $keyVaultName = "azurebmwkeyvault2"
+## Compute
+$VMName = "VirtualMachine12"
+$ComputerName = "Server22"
+$VMSize = "Standard_A2"
+$OSDiskName = $VMName + "OSDisk"
 
-    # Anmelden
-    Login-AzureRmAccount
+## KeyVault
+$keyVaultName = "azurebmwkeyvault2"
 
-    # Subscription wählen
-    Select-AzureRmSubscription `
-        -SubscriptionId "ec925902-1e8a-4569-9861-55a6a8c95e47"
+#------------------------------------------------------------------------------
+# 1. Bei Azure anmelden und Subscription setzen
+# ACHTUNG! Hier muss noch die Subscription-ID eingetragen werden
+#------------------------------------------------------------------------------
+Login-AzureRmAccount
 
-    # Resource Group
-    New-AzureRmResourceGroup `
-        -Name $ResourceGroupName `
-        -Location $Location
+Select-AzureRmSubscription `
+    -SubscriptionId "<mysubscription>"
 
-    # Azure Key Vault
-    New-AzureRmKeyVault `
-        -VaultName $keyVaultName `
-        -ResourceGroupName $ResourceGroupName `
-        -Location $Location
+#------------------------------------------------------------------------------
+# 2. Ressource Group anlegen
+#------------------------------------------------------------------------------
+New-AzureRmResourceGroup `
+    -Name $ResourceGroupName `
+    -Location $Location
 
-    # Key Vault Policy setzen
-    Set-AzureRmKeyVaultAccessPolicy `
-        -VaultName $keyVaultName `
-        -EnabledForDeployment
+#------------------------------------------------------------------------------
+# 3. Neuen Azure Key Vault anlegen
+#    Dies muss nur ein Mal gemacht werden und nicht für jede VM
+#------------------------------------------------------------------------------
+New-AzureRmKeyVault `
+    -VaultName $keyVaultName `
+    -ResourceGroupName $ResourceGroupName `
+    -Location $Location
 
-   Set-AzureRmKeyVaultAccessPolicy `
-        -VaultName $keyVaultName `
-        -ResourceGroupName $resourceGroupName `
-        -UserPrincipalName 'geislerfrank@hotmail.com' `
-        -PermissionsToCertificates all `
-        -PermissionsToKeys all `
-        -PermissionsToSecrets all
+#------------------------------------------------------------------------------
+# 4. Policy für den Key Vault setzen. Damit bestimmt man wozu der Key Vault
+#    genutzt werden kann. 
+#------------------------------------------------------------------------------
+Set-AzureRmKeyVaultAccessPolicy `
+    -VaultName $keyVaultName `
+    -EnabledForDeployment
 
-    # Admin-Kennwort im Key Vault speichern
-    Set-AzureKeyVaultSecret `
-        -VaultName $keyVaultName `
-        -Name "AdminPassword" `
-        -SecretValue (Get-Credential).Password
+#------------------------------------------------------------------------------
+# 5. Benutzertzugriff festlegen. Hier wird bestimmt was welcher Benutzer
+#    mit dem Key Vault machen kann.  
+#------------------------------------------------------------------------------
+Set-AzureRmKeyVaultAccessPolicy `
+    -VaultName $keyVaultName `
+    -ResourceGroupName $resourceGroupName `
+    -UserPrincipalName '<user@azure.com>' `
+    -PermissionsToCertificates all `
+    -PermissionsToKeys all `
+    -PermissionsToSecrets all
+
+#------------------------------------------------------------------------------
+# 6. Kennwort des Admins im Key Vault speichern. Das Kennwort wird über einen
+#    Anmelde-Dialog eingegeben  
+#------------------------------------------------------------------------------
+Set-AzureKeyVaultSecret `
+    -VaultName $keyVaultName `
+    -Name "AdminPassword" `
+    -SecretValue (Get-Credential).Password
    
-    # Storage
-    $StorageAccount = New-AzureRmStorageAccount `
+#------------------------------------------------------------------------------
+# 7. Storage Account anlegen  
+#------------------------------------------------------------------------------
+$StorageAccount = New-AzureRmStorageAccount `
                           -ResourceGroupName $ResourceGroupName `
                           -Name $StorageName `
                           -Type $StorageType `
                           -Location $Location
    
-    # Network
-    $PIp = New-AzureRmPublicIpAddress `
+#------------------------------------------------------------------------------
+# 8. Netzwerk anlegen  
+#------------------------------------------------------------------------------
+$PIp = New-AzureRmPublicIpAddress `
+            -Name $InterfaceName `
+            -ResourceGroupName $ResourceGroupName `
+            -Location $Location `
+            -AllocationMethod Dynamic
+
+$SubnetConfig = New-AzureRmVirtualNetworkSubnetConfig `
+                    -Name $Subnet1Name `
+                    -AddressPrefix $VNetSubnetAddressPrefix
+
+$VNet = New-AzureRmVirtualNetwork `
+            -Name $VNetName `
+            -ResourceGroupName $ResourceGroupName `
+            -Location $Location `
+            -AddressPrefix $VNetAddressPrefix `
+            -Subnet $SubnetConfig
+
+$Interface = New-AzureRmNetworkInterface `
                 -Name $InterfaceName `
                 -ResourceGroupName $ResourceGroupName `
                 -Location $Location `
-                -AllocationMethod Dynamic
+                -SubnetId $VNet.Subnets[0].Id `
+                -PublicIpAddressId $PIp.Id
 
-    $SubnetConfig = New-AzureRmVirtualNetworkSubnetConfig `
-                        -Name $Subnet1Name `
-                        -AddressPrefix $VNetSubnetAddressPrefix
+#------------------------------------------------------------------------------
+# 9. Vorbereitungen für die virtuelle Maschine einrichten  
+#------------------------------------------------------------------------------
 
-    $VNet = New-AzureRmVirtualNetwork `
-                -Name $VNetName `
-                -ResourceGroupName $ResourceGroupName `
-                -Location $Location `
-                -AddressPrefix $VNetAddressPrefix `
-                -Subnet $SubnetConfig
+# Kennwort aus dem Key Vault holen
+$password = Get-AzureKeyVaultSecret `
+                -VaultName $keyvaultname `
+                -Name "AdminPassword"
 
-    $Interface = New-AzureRmNetworkInterface `
-                    -Name $InterfaceName `
-                    -ResourceGroupName $ResourceGroupName `
-                    -Location $Location `
-                    -SubnetId $VNet.Subnets[0].Id `
-                    -PublicIpAddressId $PIp.Id
-
-    # Compute
-
-    ## Setup local VM object
-    $password = Get-AzureKeyVaultSecret `
-                    -VaultName $keyvaultname `
-                    -Name "AdminPassword"
-
-    $Credential = New-Object `
-                     -TypeName System.Management.Automation.PSCredential `
-                     -ArgumentList ("vmadmin", $password.SecretValue)
+$Credential = New-Object `
+                    -TypeName System.Management.Automation.PSCredential `
+                    -ArgumentList ("vmadmin", $password.SecretValue)
 
 
-    $VirtualMachine = New-AzureRmVMConfig `
-                        -VMName $VMName `
-                        -VMSize $VMSize
+$VirtualMachine = New-AzureRmVMConfig `
+                    -VMName $VMName `
+                    -VMSize $VMSize
 
-    $VirtualMachine = Set-AzureRmVMOperatingSystem `
-                          -VM $VirtualMachine `
-                          -Windows `
-                          -ComputerName $ComputerName `
-                          -Credential $Credential `
-                          -ProvisionVMAgent `
-                          -EnableAutoUpdate
+$VirtualMachine = Set-AzureRmVMOperatingSystem `
+                        -VM $VirtualMachine `
+                        -Windows `
+                        -ComputerName $ComputerName `
+                        -Credential $Credential `
+                        -ProvisionVMAgent `
+                        -EnableAutoUpdate
 
-    $VirtualMachine = Set-AzureRmVMSourceImage `
-                            -VM $VirtualMachine `
-                            -PublisherName MicrosoftWindowsServer `
-                            -Offer WindowsServer `
-                            -Skus 2012-R2-Datacenter `
-                            -Version "latest"
+$VirtualMachine = Set-AzureRmVMSourceImage `
+                        -VM $VirtualMachine `
+                        -PublisherName MicrosoftWindowsServer `
+                        -Offer WindowsServer `
+                        -Skus 2012-R2-Datacenter `
+                        -Version "latest"
 
-    $VirtualMachine = Add-AzureRmVMNetworkInterface `
-                            -VM $VirtualMachine `
-                            -Id $Interface.Id
+$VirtualMachine = Add-AzureRmVMNetworkInterface `
+                        -VM $VirtualMachine `
+                        -Id $Interface.Id
 
-    $OSDiskUri = $StorageAccount.PrimaryEndpoints.Blob.ToString() + "vhds/" + $OSDiskName + ".vhd"
+$OSDiskUri = $StorageAccount.PrimaryEndpoints.Blob.ToString() + "vhds/" + $OSDiskName + ".vhd"
 
-    $VirtualMachine = Set-AzureRmVMOSDisk `
+$VirtualMachine = Set-AzureRmVMOSDisk `
                         -VM $VirtualMachine `
                         -Name $OSDiskName `
                         -VhdUri $OSDiskUri `
                         -CreateOption FromImage
 
-    ## Create the VM in Azure
-    New-AzureRmVM `
-        -ResourceGroupName $ResourceGroupName `
-        -Location $Location `
-        -VM $VirtualMachine
+#------------------------------------------------------------------------------
+# 10. Virtuelle Maschine anlegen  
+#------------------------------------------------------------------------------
+New-AzureRmVM `
+    -ResourceGroupName $ResourceGroupName `
+    -Location $Location `
+    -VM $VirtualMachine
