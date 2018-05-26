@@ -1,5 +1,5 @@
 ﻿#============================================================================
-#	Datei:		DiskPart.ps1
+#	Datei:		NewDisk.ps1
 #
 #	Summary:	Diese Script initialisiert eine neue Festplatte, erstellt auf ihr
 #               eine neue Partition mit maximaler Größe, Formatiert die
