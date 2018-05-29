@@ -51,7 +51,7 @@ foreach ($module in $modules){
     $TmpCmdlets = Get-Command `
                     -Module $module.Name | Measure-Object
     $AzureCmdlets += $TmpCmdlets.Count
-    write-host "Cmdlets: $($TmpCmdlets.Count)  Module: $($module.Name)"
+    Write-Host "Cmdlets: $($TmpCmdlets.Count)  Module: $($module.Name)"
 }
 
 #------------------------------------------------------------------------------

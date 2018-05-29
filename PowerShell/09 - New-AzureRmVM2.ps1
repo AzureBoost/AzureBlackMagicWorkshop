@@ -32,16 +32,16 @@ $localPath = ".\"
 #----------------------------------------------------------------------------
 # 1. Funktion zum Erstellen einer neuen Maschine anlegen
 #----------------------------------------------------------------------------
-$newVm = New-AzureRmVmFromSku `
-            -vmName "mdvm1" `
-            -resourceGroupName "BlackMagicCGNVM" `
-            -user "mdvmuser" `
-            -password "<PASSWORD>" `
-            -location "northeurope"
-            # -managedDisks $true `
-            # -storageType "Standard_LRS" `
-            # -vmSize "Standard_E4_v3" `
-            # -publisherName "MicrosoftWindowsServer" `
-            # -offer "WindowsServer" `
-            # -sku "2016-Datacenter" `
-            # -version "latest"
+New-AzureRmVmFromSku `
+    -vmName "mdvm1" `
+    -resourceGroupName "BlackMagicCGNVM" `
+    -user "mdvmuser" `
+    -password "<PASSWORD>" `
+    -location "northeurope"
+    # -managedDisks $true `
+    # -storageType "Standard_LRS" `
+    # -vmSize "Standard_E4_v3" `
+    # -publisherName "MicrosoftWindowsServer" `
+    # -offer "WindowsServer" `
+    # -sku "2016-Datacenter" `
+    # -version "latest"
