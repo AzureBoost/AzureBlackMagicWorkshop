@@ -33,7 +33,7 @@ $fileName = "NewDisk.ps1"
 $location = "northeurope"
 $storageAccountName = "blackmagicscripts"
 $containerName = "scripts"
-$localFile = ".\NewDisk.ps1"
+$localFile = ".CutsomScriptExtensions\NewDisk.ps1"
 
 #------------------------------------------------------------------------------
 # 1. Storage Account holen, oder, wenn es diesen nicht gibt anlegen

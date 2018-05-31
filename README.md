@@ -13,6 +13,7 @@ In diesem Abschnitt gibt es eine Liste mit nützlichen Links die wärend des Wor
 - [Modulare Entwicklung von PowerShell](http://www.gds-business-intelligence.de/de/2015/06/04/modulare-entwicklung-von-powershell/)
 - [Virtuelle Maschinen unter Azure automatisch starten und stoppen](http://www.gds-business-intelligence.de/de/2016/12/05/virtuelle-maschinen-unter-azure-automatisch-starten-und-stoppen/)
 - [Blog von Patrick Heyde](https://blogs.technet.microsoft.com/patrick_heyde/)
+- [Using PowerShell to Select physical disks for use with storage spaces](https://blogs.technet.microsoft.com/josebda/2015/02/08/using-powershell-to-select-physical-disks-for-use-with-storage-spaces/)
 
 ## Referenz der verwendeten Azure Cmdlets
 In diesem Abschnitt haben wir eine Referenz der PowerShell Cmdlets zusammengestellt die wir in den Scripten verwendet haben. Über die Cmdlets kann man dann auf die entsprechende Seite der Online Hilfe kommen.
