@@ -27,8 +27,7 @@
 #============================================================================*/
 
 #### Hallo Das ist eine Änderung!
-#### Und dies ist eine Änderung von DiHo
-#### nur ein weiterer Test von DiHo, wird wieder raus genommen
+
 
 #----------------------------------------------------------------------------
 # 0. Anmeldung an Azure
