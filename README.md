@@ -58,7 +58,7 @@ In diesem Abschnitt haben wir eine Referenz der PowerShell Cmdlets zusammengeste
 - [Add-AzureRmVMDataDisk](https://docs.microsoft.com/en-us/powershell/module/azurerm.compute/add-azurermvmdatadisk?view=azurermps-6.1.0)
 - [Update-AzureRmVm](https://docs.microsoft.com/en-us/powershell/module/azurerm.compute/update-azurermvm?view=azurermps-6.1.0)
 - New-AzureRmManagedDisk
-- [New-AzureRMDisk] (https://docs.microsoft.com/en-us/powershell/module/azurerm.compute/new-azurermdisk?view=azurermps-6.13.0)
+- [New-AzureRMDisk](https://docs.microsoft.com/en-us/powershell/module/azurerm.compute/new-azurermdisk?view=azurermps-6.13.0)
 - [New-AzureRmKeyVault](https://docs.microsoft.com/en-us/powershell/module/azurerm.keyvault/new-azurermkeyvault?view=azurermps-6.1.0)
 - [Set-AzureRmKeyVaultAccessPolicy](https://docs.microsoft.com/en-us/powershell/module/azurerm.keyvault/set-azurermkeyvaultaccesspolicy?view=azurermps-6.1.0)
 - [Set-AzureKeyVaultSecret](https://docs.microsoft.com/en-us/powershell/module/azurerm.keyvault/set-azurekeyvaultsecret?view=azurermps-6.1.0)
