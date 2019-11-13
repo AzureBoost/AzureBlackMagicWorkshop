@@ -18,7 +18,7 @@ In diesem Abschnitt gibt es eine Liste mit nützlichen Links die wärend des Wor
 ## Referenz der verwendeten Azure Cmdlets
 In diesem Abschnitt haben wir eine Referenz der PowerShell Cmdlets zusammengestellt die wir in den Scripten verwendet haben. Über die Cmdlets kann man dann auf die entsprechende Seite der Online Hilfe kommen.
 
-- Login-AzureRmAccount
+- [Login-AzureRmAccount](https://docs.microsoft.com/de-de/powershell/module/azurerm.profile/connect-azurermaccount?view=azurermps-6.13.0)
 - [Get-AzureRmSubscription](https://docs.microsoft.com/en-us/powershell/module/azurerm.profile/get-azurermsubscription?view=azurermps-6.1.0)
 - [Save-AzureRmContext](https://docs.microsoft.com/en-us/powershell/module/azurerm.profile/save-azurermcontext?view=azurermps-6.1.0)
 - [Import-Module](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/import-module?view=powershell-6)
@@ -58,6 +58,7 @@ In diesem Abschnitt haben wir eine Referenz der PowerShell Cmdlets zusammengeste
 - [Add-AzureRmVMDataDisk](https://docs.microsoft.com/en-us/powershell/module/azurerm.compute/add-azurermvmdatadisk?view=azurermps-6.1.0)
 - [Update-AzureRmVm](https://docs.microsoft.com/en-us/powershell/module/azurerm.compute/update-azurermvm?view=azurermps-6.1.0)
 - New-AzureRmManagedDisk
+- [New-AzureRMDisk](https://docs.microsoft.com/en-us/powershell/module/azurerm.compute/new-azurermdisk?view=azurermps-6.13.0)
 - [New-AzureRmKeyVault](https://docs.microsoft.com/en-us/powershell/module/azurerm.keyvault/new-azurermkeyvault?view=azurermps-6.1.0)
 - [Set-AzureRmKeyVaultAccessPolicy](https://docs.microsoft.com/en-us/powershell/module/azurerm.keyvault/set-azurermkeyvaultaccesspolicy?view=azurermps-6.1.0)
 - [Set-AzureKeyVaultSecret](https://docs.microsoft.com/en-us/powershell/module/azurerm.keyvault/set-azurekeyvaultsecret?view=azurermps-6.1.0)
